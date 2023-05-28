@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../shared/models/event_model.dart';
 import '../../../../../styles/colors.dart';
 import '../../../../../styles/dimensions.dart';
 import '../../../../../styles/fonts.dart';
@@ -8,10 +9,16 @@ import 'event_card.dart';
 
 class EventWidget extends StatelessWidget {
   final String eventHeading;
-  const EventWidget({super.key, required this.eventHeading});
+  final List<EventModel> events;
+  const EventWidget({
+    super.key,
+    required this.eventHeading,
+    required this.events,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final onScreen = events.take(5).toList();
     return Column(
       children: [
         Padding(
@@ -44,14 +51,23 @@ class EventWidget extends StatelessWidget {
           height: 277.h,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: 5,
+            itemCount: onScreen.length,
             itemBuilder: (context, index) {
               if (index == 0) {
                 return EventCard(
-                  padding: ScreenPadding.screenPaddingWidth,
+                  leftPadding: ScreenPadding.screenPaddingWidth,
+                  eventModel: onScreen[index],
                 );
               }
-              return const EventCard();
+              if (onScreen.length - 1 == index) {
+                return EventCard(
+                  eventModel: onScreen[index],
+                  rightPadding: ScreenPadding.screenPaddingWidth,
+                );
+              }
+              return EventCard(
+                eventModel: onScreen[index],
+              );
             },
             separatorBuilder: (context, index) {
               return SizedBox(

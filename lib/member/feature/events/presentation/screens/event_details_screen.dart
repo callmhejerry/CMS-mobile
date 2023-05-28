@@ -1,10 +1,16 @@
 import 'package:cms/styles/colors.dart';
 import 'package:cms/styles/dimensions.dart';
+import 'package:cms/utils/date_extension.dart';
+import 'package:cms/utils/time_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../shared/models/event_model.dart';
+
 class EventDetailsScreen extends StatelessWidget {
-  const EventDetailsScreen({super.key});
+  final EventModel _eventModel;
+  const EventDetailsScreen({super.key, required eventModel})
+      : _eventModel = eventModel;
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +18,9 @@ class EventDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: false,
-        title: const Text(
-          "Break Forth Encounter",
-          style: TextStyle(
+        title: Text(
+          _eventModel.title,
+          style: const TextStyle(
             color: Colors.black,
           ),
         ),
@@ -31,11 +37,14 @@ class EventDetailsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.asset(
-              "assets/images/flier2.jpg",
+            Image.network(
+              _eventModel.thumbnail,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
               height: 450.h,
+              errorBuilder: (context, error, stackTrace) {
+                return const Placeholder();
+              },
             ),
             Padding(
               padding: EdgeInsets.symmetric(
@@ -46,7 +55,7 @@ class EventDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    "Break Forth Encounter",
+                    _eventModel.title,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 17.sp,
@@ -60,18 +69,20 @@ class EventDetailsScreen extends StatelessWidget {
                   SizedBox(
                     height: 8.h,
                   ),
-                  const DetailsTile(
+                  DetailsTile(
                     icon: Icons.calendar_month_rounded,
-                    first: "Wednesday, May 3 - Friday, May 3",
-                    second: "5:30 PM - 9:00 PM",
+                    first:
+                        "${_eventModel.startDate.formatDate()} - ${_eventModel.endDate.formatDate()}",
+                    second:
+                        "${_eventModel.startTime.stringFormat()} - ${_eventModel.endTime.stringFormat()}",
                   ),
                   SizedBox(
                     height: 16.h,
                   ),
-                  const DetailsTile(
+                  DetailsTile(
                     icon: Icons.place,
-                    first: "LAM Conference Center",
-                    second: "off Book Foundation, along ifite Road, Awka",
+                    first: _eventModel.venue,
+                    second: _eventModel.location,
                   ),
                   SizedBox(
                     height: 8.h,
@@ -102,15 +113,15 @@ class EventDetailsScreen extends StatelessWidget {
                         child: Column(
                           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              "LAM Conference Center",
-                              style: TextStyle(
+                              _eventModel.church,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
                               ),
                             ),
-                            Text("Church"),
+                            const Text("Church"),
                           ],
                         ),
                       )
@@ -150,26 +161,28 @@ class DetailsTile extends StatelessWidget {
         SizedBox(
           width: 16.w,
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              first,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                first,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
               ),
-            ),
-            SizedBox(
-              height: 4.h,
-            ),
-            Text(
-              second,
-              style: const TextStyle(
-                color: greyText,
+              SizedBox(
+                height: 4.h,
               ),
-            )
-          ],
+              Text(
+                second,
+                style: const TextStyle(
+                  color: greyText,
+                ),
+              )
+            ],
+          ),
         )
       ],
     );

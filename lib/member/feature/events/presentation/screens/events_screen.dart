@@ -1,8 +1,13 @@
+import 'package:cms/member/feature/events/blocs/events_event.dart';
 import 'package:cms/styles/colors.dart';
 import 'package:cms/styles/dimensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../shared/models/event_model.dart';
+import '../../blocs/event_bloc.dart';
+import '../../blocs/event_state.dart';
 import '../widgets/event_widget.dart';
 import '../widgets/past_event_widget.dart';
 
@@ -11,6 +16,10 @@ class EventScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final eventbloc = context.read<EventBloc>();
+    if (eventbloc.state is! EventSucess) {
+      eventbloc.add(LoadEvents());
+    }
     return Scaffold(
       appBar: AppBar(
         titleSpacing: ScreenPadding.screenPaddingWidth,
@@ -25,24 +34,57 @@ class EventScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const EventWidget(eventHeading: "Today's Events"),
-              SizedBox(
-                height: 16.h,
+      body: BlocBuilder<EventBloc, EventState>(
+        builder: (context, state) {
+          if (state is InitialState) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: darkBlue,
               ),
-              const PastEventsWidget(),
-              SizedBox(
-                height: 16.h,
+            );
+          }
+          if (state is EventSucess) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (state.todaysEvents.isNotEmpty) ...[
+                      EventWidget(
+                          eventHeading: "Today's Events",
+                          events: state.todaysEvents),
+                      SizedBox(
+                        height: 16.h,
+                      )
+                    ],
+                    if (state.pastEvents.isNotEmpty) ...[
+                      PastEventsWidget(
+                        pastEvents: state.pastEvents,
+                      ),
+                      SizedBox(
+                        height: 16.h,
+                      )
+                    ],
+                    if (state.upcomingEvents.isNotEmpty)
+                      EventWidget(
+                        eventHeading: "Upcoming Events",
+                        events: state.upcomingEvents,
+                      ),
+                  ],
+                ),
               ),
-              const EventWidget(eventHeading: "Upcoming Events"),
-            ],
-          ),
-        ),
+            );
+          }
+          if (state is EventFailure) {
+            return Center(
+              child: Text(state.message),
+            );
+          }
+          return const Center(
+            child: Text("No Events"),
+          );
+        },
       ),
     );
   }
@@ -51,10 +93,12 @@ class EventScreen extends StatelessWidget {
 class PastEventCard extends StatelessWidget {
   final double leftPadding;
   final double rightPadding;
+  final EventModel eventModel;
   const PastEventCard({
     super.key,
     this.leftPadding = 0,
     this.rightPadding = 0,
+    required this.eventModel,
   });
 
   @override
@@ -73,8 +117,8 @@ class PastEventCard extends StatelessWidget {
             children: [
               Expanded(
                 flex: 90,
-                child: Image.asset(
-                  "assets/images/flier1.jpg",
+                child: Image.network(
+                  eventModel.thumbnail,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -90,21 +134,21 @@ class PastEventCard extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
-                          "Super Wednesday service",
+                          eventModel.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
                         Text(
-                          "Ifite Awka",
+                          eventModel.location,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: greyText,
                             fontWeight: FontWeight.w500,
                           ),

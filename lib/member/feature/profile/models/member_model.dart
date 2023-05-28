@@ -24,7 +24,7 @@ class MemberModel {
     required this.relationshipStatus,
   });
 
-  factory MemberModel.fromJson(Map<String, String> json) {
+  factory MemberModel.fromJson(Map<String, dynamic> json) {
     return MemberModel(
       dob: json["dob"] ?? "",
       emailAddress: json["email_address"] ?? "",

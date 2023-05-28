@@ -1,3 +1,4 @@
+import 'package:cms/shared/models/event_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -6,7 +7,8 @@ import '../../../../../styles/fonts.dart';
 import '../screens/events_screen.dart';
 
 class PastEventsWidget extends StatelessWidget {
-  const PastEventsWidget({super.key});
+  final List<EventModel> pastEvents;
+  const PastEventsWidget({super.key, required this.pastEvents});
 
   @override
   Widget build(BuildContext context) {
@@ -28,19 +30,23 @@ class PastEventsWidget extends StatelessWidget {
           height: 128.h,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: 5,
+            itemCount: pastEvents.length,
             itemBuilder: (context, index) {
               if (index == 0) {
                 return PastEventCard(
                   leftPadding: ScreenPadding.screenPaddingWidth,
+                  eventModel: pastEvents[index],
                 );
               }
-              if (index == 4) {
+              if (pastEvents.length - 1 == index) {
                 return PastEventCard(
                   rightPadding: ScreenPadding.screenPaddingWidth,
+                  eventModel: pastEvents[index],
                 );
               }
-              return const PastEventCard();
+              return PastEventCard(
+                eventModel: pastEvents[index],
+              );
             },
             separatorBuilder: (context, index) {
               return SizedBox(
