@@ -1,18 +1,27 @@
+import 'package:cms/shared/authentication/models/user_model.dart';
+import 'package:cms/shared/authentication/services/local_auth_service.dart';
+import 'package:isar/isar.dart';
+
 import '../../../../shared/enums/gender_enum.dart';
 import '../../../../shared/enums/relationship_status_enum.dart';
+part 'member_model.g.dart';
 
-class MemberModel {
-  final String id;
+@collection
+class MemberModel extends UserModel {
   final String firstName;
   final String lastName;
   final String emailAddress;
   final String phoneNumber;
+
+  @Enumerated(EnumType.name)
   final Gender gender;
+  @Enumerated(EnumType.name)
   final RelationshipStatus relationshipStatus;
   final String residentialAddress;
   final String dob;
+  final String id;
 
-  const MemberModel({
+  MemberModel({
     required this.dob,
     required this.emailAddress,
     required this.firstName,
@@ -22,7 +31,7 @@ class MemberModel {
     required this.lastName,
     required this.residentialAddress,
     required this.relationshipStatus,
-  });
+  }) : super(userType: UserType.member);
 
   factory MemberModel.fromJson(Map<String, dynamic> json) {
     return MemberModel(

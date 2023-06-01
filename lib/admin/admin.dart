@@ -2,10 +2,15 @@ import 'package:cms/admin/feature/admins/blocs/admin_bloc.dart';
 import 'package:cms/admin/feature/admins/blocs/admin_event.dart';
 import 'package:cms/admin/feature/admins/blocs/admin_state.dart';
 import 'package:cms/admin/feature/admins/presentation/Screens/admins_screen.dart';
+import 'package:cms/admin/feature/overview/blocs/overview_event.dart';
 import 'package:cms/admin/feature/overview/presentation/screens/overview_screen.dart';
+import 'package:cms/admin/feature/profile/presentation/Screens/profile_screen.dart';
 import "package:cms/styles/colors.dart";
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'feature/overview/blocs/overview_bloc.dart';
+import 'feature/overview/blocs/overview_state.dart';
 
 class AdminApp extends StatefulWidget {
   const AdminApp({super.key});
@@ -17,8 +22,9 @@ class AdminApp extends StatefulWidget {
 class _AdminAppState extends State<AdminApp> {
   int _currentIndex = 0;
   final List<Widget> _screens = [
-    const AdminScreen(),
     const OverViewScreen(),
+    const AdminScreen(),
+    const AdminProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -32,7 +38,14 @@ class _AdminAppState extends State<AdminApp> {
             }
             return adminBloc;
           },
-        )
+        ),
+        BlocProvider(create: (context) {
+          final overviewBloc = OverviewBloc();
+          if (overviewBloc.state is OverviewInitialState) {
+            overviewBloc.add(LoadStats());
+          }
+          return overviewBloc;
+        })
       ],
       child: Scaffold(
         body: _screens[_currentIndex],
@@ -49,16 +62,22 @@ class _AdminAppState extends State<AdminApp> {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(
+                Icons.dashboard,
+              ),
+              label: "Overview",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
                 Icons.admin_panel_settings_rounded,
               ),
               label: "Admins",
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.dashboard,
+                Icons.person,
               ),
-              label: "Overview",
-            )
+              label: "Profile",
+            ),
           ],
         ),
       ),

@@ -24,4 +24,33 @@ mixin FormValidators {
     }
     return null;
   }
+
+  String? phoneNumberValidator(String? phoneNumber) {
+    if (phoneNumber == null) {
+      return "Please input your phone number";
+    }
+
+    if (phoneNumber.startsWith("+")) {
+      if (phoneNumber.length != 14) {
+        return "Please input a valid phone number";
+      }
+    }
+
+    if (phoneNumber.startsWith('0')) {
+      if (phoneNumber.length != 11) {
+        return "Please input a valid phone number";
+      }
+      if (int.tryParse(phoneNumber) == null) {
+        return "Please input a valid phone number";
+      }
+    }
+    return null;
+  }
+
+  String? churchValidator(String? church) {
+    if (church == null) {
+      return "Please input a church";
+    }
+    return null;
+  }
 }

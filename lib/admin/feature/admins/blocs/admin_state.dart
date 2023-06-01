@@ -1,4 +1,4 @@
-import 'package:cms/admin/shared/models/admin_model.dart';
+import '../../../../shared/authentication/models/admin_model.dart';
 
 abstract class AdminState {}
 

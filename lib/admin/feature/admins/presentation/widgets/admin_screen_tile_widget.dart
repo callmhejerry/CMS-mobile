@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../shared/authentication/models/admin_model.dart';
 import '../../../../../styles/colors.dart';
-import '../../../../shared/models/admin_model.dart';
 
 class AdminScreenTileWidget extends StatelessWidget {
   final AdminModel admin;

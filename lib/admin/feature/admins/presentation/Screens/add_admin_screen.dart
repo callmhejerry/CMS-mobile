@@ -1,5 +1,6 @@
 import 'package:cms/styles/colors.dart';
 import 'package:cms/styles/dimensions.dart';
+import 'package:cms/utils/form_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,10 +8,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../shared/blocs/church_bloc/church_bloc.dart';
 import '../../../../../shared/blocs/church_bloc/church_event.dart';
 import '../../../../../shared/blocs/church_bloc/church_state.dart';
+import '../../../../../shared/widgets/custom_text_field.dart';
 
-class AddAdminScreen extends StatelessWidget {
-  AddAdminScreen({super.key});
+class AddAdminScreen extends StatefulWidget {
+  const AddAdminScreen({super.key});
 
+  @override
+  State<AddAdminScreen> createState() => _AddAdminScreenState();
+}
+
+class _AddAdminScreenState extends State<AddAdminScreen> with FormValidators {
   List<DropdownMenuItem<String>> getDropDown(ChurchState state) {
     if (state is ChurchSuccessState) {
       final dropDowns = state.churches
@@ -28,11 +35,26 @@ class AddAdminScreen extends StatelessWidget {
   }
 
   final formKey = GlobalKey<FormState>();
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController firstNameController = TextEditingController();
+
   final TextEditingController lastNameController = TextEditingController();
+
   final TextEditingController phoneNumberController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    passwordController.dispose();
+    emailController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    phoneNumberController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +103,7 @@ class AddAdminScreen extends StatelessWidget {
               CustomTextField(
                 hintText: "Email address",
                 controller: emailController,
+                validator: emailValidator,
               ),
               SizedBox(
                 height: 16.h,
@@ -88,6 +111,7 @@ class AddAdminScreen extends StatelessWidget {
               CustomTextField(
                 controller: firstNameController,
                 hintText: "First name",
+                validator: nameValidator,
               ),
               SizedBox(
                 height: 16.h,
@@ -95,12 +119,14 @@ class AddAdminScreen extends StatelessWidget {
               CustomTextField(
                 hintText: "Last name",
                 controller: lastNameController,
+                validator: nameValidator,
               ),
               SizedBox(
                 height: 16.h,
               ),
               CustomTextField(
                 hintText: "Phone number",
+                validator: phoneNumberValidator,
                 controller: phoneNumberController,
               ),
               SizedBox(
@@ -123,6 +149,7 @@ class AddAdminScreen extends StatelessWidget {
                   return DropdownButtonFormField<String>(
                     hint: const Text("Church"),
                     items: getDropDown(state),
+                    validator: churchValidator,
                     value: state is ChurchSuccessState ? state.value : null,
                     onChanged: (String? church) {
                       if (church != null && state is ChurchSuccessState) {
@@ -159,12 +186,17 @@ class AddAdminScreen extends StatelessWidget {
               CustomTextField(
                 hintText: "Password",
                 controller: passwordController,
+                validator: passwordValidator,
               ),
               SizedBox(
                 height: 16.h,
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    // TODO : submit the credentials to the backend
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: darkBlue,
                   minimumSize: Size(200.w, 50.h),
@@ -183,45 +215,6 @@ class AddAdminScreen extends StatelessWidget {
                 ),
               )
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CustomTextField extends StatelessWidget {
-  final String hintText;
-  final FocusNode? focusNode;
-  final TextEditingController controller;
-  const CustomTextField({
-    super.key,
-    required this.hintText,
-    this.focusNode,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      focusNode: focusNode,
-      maxLines: 1,
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: hintText,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
-          borderSide: const BorderSide(
-            color: darkBlue,
-            style: BorderStyle.solid,
-            width: 2,
-          ),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
-          borderSide: const BorderSide(
-            color: greyText,
-            style: BorderStyle.solid,
           ),
         ),
       ),

@@ -1,6 +1,7 @@
-import 'package:cms/admin/shared/models/admin_model.dart';
 import 'package:cms/shared/client/client.dart';
 import 'package:cms/utils/exception.dart';
+
+import '../../../../shared/authentication/models/admin_model.dart';
 
 class AdminApi {
   final _client = TestClient();

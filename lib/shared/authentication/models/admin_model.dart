@@ -1,4 +1,11 @@
-class AdminModel {
+import 'package:cms/shared/authentication/models/user_model.dart';
+import 'package:isar/isar.dart';
+
+import '../services/local_auth_service.dart';
+part 'admin_model.g.dart';
+
+@collection
+class AdminModel extends UserModel {
   final String firstName;
   final String lastName;
   final String emailAddress;
@@ -6,14 +13,14 @@ class AdminModel {
   final String church;
   final String id;
 
-  const AdminModel({
+  AdminModel({
     required this.church,
     required this.emailAddress,
     required this.firstName,
     required this.id,
     required this.lastName,
     required this.phoneNumber,
-  });
+  }) : super(userType: UserType.admin);
 
   factory AdminModel.fromJson(Map<String, dynamic> json) {
     return AdminModel(
